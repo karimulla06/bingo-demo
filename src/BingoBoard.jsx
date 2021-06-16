@@ -20,7 +20,7 @@ export default function BingoBoard({size=5}) {
       className:"bingo-box",
       onClick: () => handleClick(key),
       style: {
-        backgroundColor: selected.includes(key) && 'yellow'
+        backgroundColor: selected.includes(key) && 'cyan'
       }
     }
     return(
