@@ -28,10 +28,13 @@ export default function BingoBoard({size=5}) {
     );
   }
   return (
+    <>
+    <h2 className='title'>B I N G O</h2>
     <div className="bingo-grid" style={{width:`${size*10}vw`}}>
     {
       randomArray.map(key => getCell(key))
     }
     </div>
+    </>
   );
 }
