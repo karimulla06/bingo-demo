@@ -11,10 +11,22 @@ export default function BingoBoard({ size = 5 }) {
   );
 
   const [selected, setSelected] = useLocalState('bingo-selected', []);
+  const [canUndo, setCanUndo] = useLocalState('bingo-undo', false);
 
   const handleClick = key => {
-    setSelected(arr => [...arr, key]);
-    console.log(key);
+    if (!selected.includes(key)) {
+      setSelected(arr => [...arr, key]);
+      setCanUndo(true);
+    }
+  };
+  const handleUndo = () => {
+    setSelected(arr => arr.slice(0, -1));
+    setCanUndo(false);
+  };
+  const handleNewGame = () => {
+    setRandomArray(generateRandomArray(size * size));
+    setSelected([]);
+    setCanUndo(false);
   };
 
   const getCell = key => {
@@ -32,11 +44,23 @@ export default function BingoBoard({ size = 5 }) {
     );
   };
   return (
-    <>
+    <div className="game-area">
       <h2 className="title">B I N G O</h2>
       <div className="bingo-grid" style={{ width: `${size * 10}vw` }}>
         {randomArray.map(key => getCell(key))}
       </div>
-    </>
+      <div className="buttons-container" style={{ width: `${size * 10}vw` }}>
+        <button
+          onClick={handleUndo}
+          disabled={!canUndo}
+          className="bingo-button"
+        >
+          Undo
+        </button>
+        <button onClick={handleNewGame} className="bingo-button">
+          New Game
+        </button>
+      </div>
+    </div>
   );
 }
