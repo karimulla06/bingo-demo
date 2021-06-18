@@ -21,7 +21,7 @@ export default function BingoBoard() {
     'bingo-completed-lines',
     0
   );
-
+  const boardSizes = [3, 4, 5, 6, 7, 8, 9, 10];
   React.useEffect(() => {
     linesCompleted == size && setCanUndo(false);
   }, [linesCompleted, size]);
@@ -41,13 +41,17 @@ export default function BingoBoard() {
     setSelected(arr => arr.slice(0, -1));
     setCanUndo(false);
   };
-  const handleNewGame = () => {
+  const handleNewGame = size => {
     localStorage.clear();
     setRandomArray(generateRandomArray(size * size));
     setSelected([]);
     setCanUndo(false);
     setLinesObj(createLinesObj(size));
     setLinesCompleted(0);
+  };
+  const handleSizeChange = size => {
+    setSize(size);
+    handleNewGame(size);
   };
 
   const getCell = (key, index) => {
@@ -78,9 +82,21 @@ export default function BingoBoard() {
         >
           Undo
         </button>
-        <button onClick={handleNewGame} className="bingo-button">
+        <button onClick={() => handleNewGame(size)} className="bingo-button">
           New Game
         </button>
+        <label>
+          Change Board Size:
+          <select
+            name="sizes"
+            className="bingo-select"
+            onChange={e => handleSizeChange(Number(e.target.value))}
+          >
+            {boardSizes.map(s => (
+              <option value={s}>{s}</option>
+            ))}
+          </select>
+        </label>
       </div>
       {linesCompleted >= size ? (
         <h1 className="title">You WON !!!</h1>
