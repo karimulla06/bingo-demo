@@ -22,8 +22,12 @@ export default function BingoBoard() {
     0
   );
 
+  React.useEffect(() => {
+    linesCompleted == size && setCanUndo(false);
+  }, [linesCompleted, size]);
+
   const handleClick = (key, index) => {
-    if (!selected.includes(key)) {
+    if (!selected.includes(key) && linesCompleted < size) {
       const newSelected = [...selected, key];
       setSelected(newSelected);
       setCanUndo(true);
@@ -78,7 +82,11 @@ export default function BingoBoard() {
           New Game
         </button>
       </div>
-      {linesCompleted >= size && <h1 className="title">You WON !!!</h1>}
+      {linesCompleted >= size ? (
+        <h1 className="title">You WON !!!</h1>
+      ) : (
+        <h4 className="title">Lines Completed: {linesCompleted}</h4>
+      )}
     </div>
   );
 }
