@@ -1,57 +1,25 @@
 import React from 'react';
 import { useLocalState } from './useLocalState';
+import {
+  generateRandomArray,
+  createLinesObj,
+  getCompletedStatus
+} from './utils';
 import './style.css';
 
-const generateRandomArray = size => {
-  return [...Array(size + 1).keys()].splice(1).sort(() => 0.5 - Math.random());
-};
-
-const createLinesObj = size => {
-  const obj = {
-    h: {},
-    v: {},
-    d: {
-      0: size,
-      1: size
-    }
-  };
-  for (let i = 0; i < size; i++) {
-    obj.h[i] = size;
-    obj.v[i] = size;
-  }
-  return obj;
-};
-
-const getCompletedLines = (index, size, obj) => {
-  const { h, v, d } = obj;
-  const q = Math.floor(index / size);
-  const r = Math.floor(index % size);
-  const d1 = q == r;
-  const d2 = q + r === size - 1;
-  let arr = [];
-
-  if (d1 && d2) {
-    arr = [--h[q], --v[r], --d[0], --d[1]];
-  } else if (d1) {
-    arr = [--h[q], --v[r], --d[0]];
-  } else if (d2) {
-    arr = [--h[q], --v[r], --d[1]];
-  } else {
-    arr = [--h[q], --v[r]];
-  }
-  return arr.filter(x => x === 0).length;
-};
-
-export default function BingoBoard({ size = 5 }) {
-  const [randomArray, setRandomArray] = useLocalState('bingo', () =>
+export default function BingoBoard() {
+  const [size, setSize] = useLocalState('bingo-size', 5);
+  const [randomArray, setRandomArray] = useLocalState('bingo-keys', () =>
     generateRandomArray(size * size)
   );
-
-  const [selected, setSelected] = useLocalState('bingo-selected', []);
-  const [canUndo, setCanUndo] = useLocalState('bingo-undo', false);
-
-  const [linesObj, setLinesObj] = useLocalState('bingo-lines', () =>
+  const [selected, setSelected] = useLocalState('bingo-selected-keys', []);
+  const [canUndo, setCanUndo] = useLocalState('bingo-can-undo', false);
+  const [linesObj, setLinesObj] = useLocalState('bingo-lines-obj', () =>
     createLinesObj(size)
+  );
+  const [linesCompleted, setLinesCompleted] = useLocalState(
+    'bingo-completed-lines',
+    0
   );
 
   const handleClick = (key, index) => {
@@ -59,7 +27,10 @@ export default function BingoBoard({ size = 5 }) {
       const newSelected = [...selected, key];
       setSelected(newSelected);
       setCanUndo(true);
-      console.log(getCompletedLines(index, size, linesObj));
+
+      const [completedLines, obj] = getCompletedStatus(index, size, linesObj);
+      setLinesObj(JSON.parse(JSON.stringify(obj)));
+      completedLines > 0 && setLinesCompleted(linesCompleted + completedLines);
     }
   };
   const handleUndo = () => {
@@ -67,10 +38,12 @@ export default function BingoBoard({ size = 5 }) {
     setCanUndo(false);
   };
   const handleNewGame = () => {
+    localStorage.clear();
     setRandomArray(generateRandomArray(size * size));
     setSelected([]);
     setCanUndo(false);
     setLinesObj(createLinesObj(size));
+    setLinesCompleted(0);
   };
 
   const getCell = (key, index) => {
@@ -105,6 +78,7 @@ export default function BingoBoard({ size = 5 }) {
           New Game
         </button>
       </div>
+      {linesCompleted >= size && <h1 className="title">You WON !!!</h1>}
     </div>
   );
 }
