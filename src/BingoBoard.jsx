@@ -75,28 +75,31 @@ export default function BingoBoard() {
         {randomArray.map((key, index) => getCell(key, index))}
       </div>
       <div className="buttons-container" style={{ width: `${size * 10}vw` }}>
-        <button
+        {/* <button
           onClick={handleUndo}
           disabled={!canUndo}
           className="bingo-button"
         >
           Undo
-        </button>
-        <button onClick={() => handleNewGame(size)} className="bingo-button">
-          New Game
-        </button>
+        </button> */}
+
         <label>
-          Change Board Size:
+          Board Size:
           <select
             name="sizes"
             className="bingo-select"
             onChange={e => handleSizeChange(Number(e.target.value))}
           >
             {boardSizes.map(s => (
-              <option value={s}>{s}</option>
+              <option value={s} key={s} selected={s === size && 'selected'}>
+                {s}
+              </option>
             ))}
           </select>
         </label>
+        <button onClick={() => handleNewGame(size)} className="bingo-button">
+          New Game
+        </button>
       </div>
       {linesCompleted >= size ? (
         <h1 className="title">You WON !!!</h1>
