@@ -6,7 +6,8 @@ import {
   getCompletedStatus,
   getUndoStatus
 } from './utils';
-import './style.css';
+import Confetti from './Confetti';
+import './bingoBoard.scss';
 
 export default function BingoBoard() {
   const [size, setSize] = useLocalState('bingo-size', 5);
@@ -109,7 +110,10 @@ export default function BingoBoard() {
         </button>
       </div>
       {linesCompleted >= size ? (
-        <h1 className="title">You WON !!!</h1>
+        <div>
+          <h1 className="title">You WON !!!</h1>
+          <Confetti />
+        </div>
       ) : (
         <h4 className="title">Lines Completed: {linesCompleted}</h4>
       )}
